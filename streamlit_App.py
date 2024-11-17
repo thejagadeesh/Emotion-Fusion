@@ -380,11 +380,8 @@ from tensorflow.keras.models import load_model
 from mtcnn import MTCNN
 
 # Load the emotion recognition model
-model_path = r"New_model.h5"
+model_path = r"New_model.h5"  # Update with the correct path
 model = load_model(model_path)
-
-# Compile the model with dummy metrics to avoid warnings
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Load the MTCNN detector for face detection
 detector = MTCNN()
@@ -392,7 +389,7 @@ detector = MTCNN()
 # Emotion labels
 emotion_labels = ['angry', 'contempt', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
-# Scaling factors for emotions
+# Scaling factors for emotions (if required)
 emotion_scaling = {
     'angry': 1.0,
     'contempt': 1.0,
@@ -427,18 +424,29 @@ def predict_emotion(roi):
     preds = adjust_predictions(preds)  # Adjust predictions with the scaling factors
     return preds[0]  # Return the adjusted predictions
 
+# Function to try multiple camera indices if the default camera fails
+def get_camera():
+    video_capture = cv2.VideoCapture(0)  # Try the default camera
+    if not video_capture.isOpened():
+        video_capture = cv2.VideoCapture(1)  # Try the next index
+    if not video_capture.isOpened():
+        video_capture = cv2.VideoCapture(2)  # Try the next one, and so on
+    return video_capture
+
 # Main function for running the emotion detection
 def run_emotion_detection():
-    video_capture = cv2.VideoCapture(0)  # Open the default camera (try changing index if needed)
+    video_capture = get_camera()  # Get the camera
+    
     if not video_capture.isOpened():
         st.error("Camera not found!")
-        return
+        return  # Exit if the camera cannot be accessed
 
     frame_window = st.empty()  # Placeholder for video frames
 
     while st.session_state.start_detection:
         ret, frame = video_capture.read()  # Read a frame from the camera
         if not ret:
+            st.error("Failed to capture frame from camera!")
             break  # If no frame is captured, break the loop
 
         # Detect faces using MTCNN
