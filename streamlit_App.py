@@ -17,16 +17,14 @@ if "page" not in st.session_state:
 # Set page configuration
 st.set_page_config(page_title="EmotionFusion", layout="wide")
 
-
-st.set_page_config(page_title="EmotionFusion", layout="wide")
 # Streamlit app interface
 st.title("EmotionFusion – Multimodal Understanding of Human Emotions")
 
 # Sidebar for navigation
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Select an option",
-                        ["Home", "Analyze Sentences", "Generate Story", "Image Annotation", "Video Annotation",
-                         "Live Cam", "View History"], key='navigation')
+                        ["Home", "Image Annotation", "Video Annotation",
+                         "Live Cam"], key='navigation')
 
 # Main content based on selected page
 
@@ -55,10 +53,7 @@ if page == "Home":
         Turn on your webcam to get live emotion feedback as you interact. See how your facial expressions shift in real time!
         """
     )
-   # import streamlit as st
 
-    # Display image from URL without caption
-  #  st.image(r"C:\Users\JAGADEESH\Downloads\IMAGES FOR JOURNAL\Final_annotated_image.png", use_column_width=True)
 
     # How it works section
     st.header("How It Works")
@@ -183,11 +178,6 @@ def plot_confidence_chart(confidence_scores):
     )
     return fig
 
-
-
-    # Display a demo image
-   # demo_image_path = r"C:\Users\JAGADEESH\Downloads\IMAGES FOR JOURNAL\Final_annotated_image.png"
-   # st.image(demo_image_path, caption="Emotion Annotation Example", use_column_width=True)
 
 # Page: Image Annotation
 if page == "Image Annotation":
