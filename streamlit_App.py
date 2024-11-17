@@ -18,23 +18,69 @@ if "page" not in st.session_state:
 st.set_page_config(page_title="EmotionFusion", layout="wide")
 
 
+st.set_page_config(page_title="EmotionFusion", layout="wide")
+# Streamlit app interface
+st.title("EmotionFusion – Multimodal Understanding of Human Emotions")
+
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio(
-    "Select an option",
-    ["Home", "Image Annotation", "Video Annotation", "Live Cam"],
-    key="navigation"
-)
+page = st.sidebar.radio("Select an option",
+                        ["Home", "Analyze Sentences", "Generate Story", "Image Annotation", "Video Annotation",
+                         "Live Cam", "View History"], key='navigation')
 
-# Dropdown for navigation in Home
-if st.session_state.page == "Home":
-    selected_option = st.selectbox(
-        "Choose a feature:",
-        ["Select an option", "Image Annotation", "Video Annotation", "Live Cam"]
+# Main content based on selected page
+
+# Home page content
+if page == "Home":
+    # Title and introductory tagline
+    st.title("Welcome to EmotionFusion")
+    st.subheader("Discover Emotions, Uncover Insights")
+    st.write(
+        """
+        **EmotionFusion** is your all-in-one platform that helps you analyze emotions from text, images, and live video feeds. Whether you're curious about your emotional state or want to explore how emotions are expressed, EmotionFusion offers instant, real-time analysis to give you valuable insights.
+        """
     )
 
+    # Key features section
+    st.header("Key Features")
+    st.write(
+        """
+        **1. Text Emotion Analysis**
+        Type or paste any text to see what emotions are conveyed. Our tool breaks down the emotions hidden in your words.
 
+        **2. Image & Video Emotion Detection**
+        Upload photos or videos to analyze facial expressions and see the emotions behind them.
 
+        **3. Real-Time Emotion Recognition**
+        Turn on your webcam to get live emotion feedback as you interact. See how your facial expressions shift in real time!
+        """
+    )
+   # import streamlit as st
+
+    # Display image from URL without caption
+  #  st.image(r"C:\Users\JAGADEESH\Downloads\IMAGES FOR JOURNAL\Final_annotated_image.png", use_column_width=True)
+
+    # How it works section
+    st.header("How It Works")
+    st.write(
+        """
+        1. **Input**: Choose to input text, upload an image or video, or use your live camera feed.
+        2. **Emotion Detection**: Our system will analyze your input and detect emotions instantly.
+        3. **Visualize**: See the results in easy-to-read charts and visualizations.
+        4. **Download**: Save the analysis or share it for further exploration.
+        """
+    )
+
+    # Why choose us section
+    st.header("Why Choose EmotionFusion?")
+    st.write(
+        """
+        - **Multiple Ways to Detect Emotions**: From text to images and live video, EmotionFusion offers diverse ways to analyze emotions.
+        - **Real-Time Feedback**: Experience instant emotion analysis with our easy-to-use, live webcam feature.
+        - **Simple and Intuitive**: Whether you're a researcher or just curious, our platform is designed for anyone to use without needing technical knowledge.
+        """
+    )
+    
 # Load the emotion recognition model
 model_path = r"New_model.h5"
 model = load_model(model_path)
@@ -137,14 +183,7 @@ def plot_confidence_chart(confidence_scores):
     )
     return fig
 
-# Page: Home
-if page == "Home":
-    st.title("Welcome to EmotionFusion")
-    st.subheader("Discover Emotions, Uncover Insights")
-    st.write("""
-    **EmotionFusion** is your all-in-one platform for analyzing emotions from text, images, and live video feeds. 
-    Explore emotional expressions in real-time or through uploaded content!
-    """)
+
 
     # Display a demo image
    # demo_image_path = r"C:\Users\JAGADEESH\Downloads\IMAGES FOR JOURNAL\Final_annotated_image.png"
