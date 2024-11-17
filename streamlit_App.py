@@ -373,7 +373,6 @@ if page == "Video Annotation":
     elif st.session_state.processing:
         st.info("Video processing is currently ongoing. Please wait until it completes.")
 
-
 import streamlit as st
 import cv2
 import numpy as np
@@ -383,6 +382,9 @@ from mtcnn import MTCNN
 # Load the emotion recognition model
 model_path = r"New_model.h5"
 model = load_model(model_path)
+
+# Compile the model with dummy metrics to avoid warnings
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Load the MTCNN detector for face detection
 detector = MTCNN()
@@ -427,7 +429,11 @@ def predict_emotion(roi):
 
 # Main function for running the emotion detection
 def run_emotion_detection():
-    video_capture = cv2.VideoCapture(0)  # Open the default camera
+    video_capture = cv2.VideoCapture(0)  # Open the default camera (try changing index if needed)
+    if not video_capture.isOpened():
+        st.error("Camera not found!")
+        return
+
     frame_window = st.empty()  # Placeholder for video frames
 
     while st.session_state.start_detection:
