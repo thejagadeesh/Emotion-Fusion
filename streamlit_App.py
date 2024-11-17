@@ -22,7 +22,7 @@ st.set_page_config(page_title="EmotionFusion", layout="wide")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Select an option",
-    ["Home", "Analyze Sentences", "Generate Story", "Image Annotation", "Video Annotation", "Live Cam", "View History"],
+    ["Home", "Image Annotation", "Video Annotation", "Live Cam"],
     key="navigation"
 )
 
@@ -147,8 +147,8 @@ if page == "Home":
     """)
 
     # Display a demo image
-    demo_image_path = r"C:\Users\JAGADEESH\Downloads\IMAGES FOR JOURNAL\Final_annotated_image.png"
-    st.image(demo_image_path, caption="Emotion Annotation Example", use_column_width=True)
+   # demo_image_path = r"C:\Users\JAGADEESH\Downloads\IMAGES FOR JOURNAL\Final_annotated_image.png"
+   # st.image(demo_image_path, caption="Emotion Annotation Example", use_column_width=True)
 
 # Page: Image Annotation
 if page == "Image Annotation":
