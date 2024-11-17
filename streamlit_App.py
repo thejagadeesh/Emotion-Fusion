@@ -24,7 +24,7 @@ st.title("EmotionFusion – Multimodal Understanding of Human Emotions")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Select an option",
                         ["Home", "Image Annotation", "Video Annotation",
-                         "Live Cam"], key='navigation')
+                         "Live Cam", ""], key='navigation')
 
 # Main content based on selected page
 
