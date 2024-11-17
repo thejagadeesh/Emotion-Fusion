@@ -386,6 +386,7 @@ model = load_model(model_path)
 
 # Load the MTCNN detector for face detection
 detector = MTCNN()
+
 # Emotion labels
 emotion_labels = ['angry', 'contempt', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
@@ -400,8 +401,6 @@ emotion_scaling = {
     'sad': 1.0,
     'surprise': 1.0,
 }
-
-detector = MTCNN()  # Initialize MTCNN detector
 
 # Function to preprocess the face region for prediction
 def preprocess_face(roi):
@@ -475,4 +474,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
