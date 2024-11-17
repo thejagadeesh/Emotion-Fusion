@@ -379,27 +379,15 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from mtcnn import MTCNN
 
-# Load the emotion recognition model
-model_path = r"New_model.h5"  # Update with the correct path
+# Load the compiled emotion recognition model (ensure it's saved with compiled state)
+model_path = r"New_model.h5"  # Path to the compiled model
 model = load_model(model_path)
 
-# Load the MTCNN detector for face detection
+# Initialize MTCNN for face detection
 detector = MTCNN()
 
 # Emotion labels
 emotion_labels = ['angry', 'contempt', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
-
-# Scaling factors for emotions (if required)
-emotion_scaling = {
-    'angry': 1.0,
-    'contempt': 1.0,
-    'disgust': 1.0,
-    'fear': 1.0,
-    'happy': 1.0,
-    'neutral': 1.0,
-    'sad': 1.0,
-    'surprise': 1.0,
-}
 
 # Function to preprocess the face region for prediction
 def preprocess_face(roi):
@@ -410,44 +398,31 @@ def preprocess_face(roi):
     roi = np.expand_dims(roi, axis=0)  # Add batch dimension
     return roi
 
-# Function to adjust the predicted probabilities for certain emotions
-def adjust_predictions(preds):
-    for i, label in enumerate(emotion_labels):
-        preds[0][i] *= emotion_scaling[label]  # Apply scaling factor
-    preds[0] /= np.sum(preds[0])  # Normalize to ensure probabilities sum to 1
-    return preds
-
 # Function to predict emotion from a face ROI
 def predict_emotion(roi):
     roi_preprocessed = preprocess_face(roi)
     preds = model.predict(roi_preprocessed)
-    preds = adjust_predictions(preds)  # Adjust predictions with the scaling factors
-    return preds[0]  # Return the adjusted predictions
+    return preds[0]  # Return the predictions
 
-# Function to try multiple camera indices if the default camera fails
-def get_camera():
-    video_capture = cv2.VideoCapture(0)  # Try the default camera
-    if not video_capture.isOpened():
-        video_capture = cv2.VideoCapture(1)  # Try the next index
-    if not video_capture.isOpened():
-        video_capture = cv2.VideoCapture(2)  # Try the next one, and so on
-    return video_capture
-
-# Main function for running the emotion detection
+# Function to run emotion detection from the webcam
 def run_emotion_detection():
-    video_capture = get_camera()  # Get the camera
-    
+    video_capture = cv2.VideoCapture(0)  # Try to open the default camera
+
     if not video_capture.isOpened():
-        st.error("Camera not found!")
-        return  # Exit if the camera cannot be accessed
+        # Try the second camera if the first one is unavailable
+        video_capture = cv2.VideoCapture(1)
+
+    if not video_capture.isOpened():
+        # If no camera is found, exit the function
+        st.error("Error: No camera detected!")
+        return
 
     frame_window = st.empty()  # Placeholder for video frames
 
-    while st.session_state.start_detection:
-        ret, frame = video_capture.read()  # Read a frame from the camera
+    while True:
+        ret, frame = video_capture.read()  # Capture frame
         if not ret:
-            st.error("Failed to capture frame from camera!")
-            break  # If no frame is captured, break the loop
+            break  # Exit the loop if the frame is not captured
 
         # Detect faces using MTCNN
         faces = detector.detect_faces(frame)
@@ -456,21 +431,24 @@ def run_emotion_detection():
             # Extract bounding box and keypoints (if needed)
             x, y, w, h = face['box']
             roi = frame[y:y + h, x:x + w]  # Extract face region of interest (ROI)
-            preds = predict_emotion(roi)  # Predict the emotion for the ROI
-            emotion = emotion_labels[np.argmax(preds)]  # Get the emotion label
+
+            # Predict the emotion for the ROI
+            preds = predict_emotion(roi)
+            emotion = emotion_labels[np.argmax(preds)]  # Get the predicted emotion
             confidence = np.max(preds)  # Get confidence score
 
             # Apply a confidence threshold to avoid incorrect labeling
             if confidence > 0.6:
-                # Draw a rectangle around the face and annotate with the emotion and confidence
+                # Draw rectangle around face and annotate with emotion and confidence
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                cv2.putText(frame, f'{emotion} ({confidence:.2f})', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                cv2.putText(frame, f'{emotion} ({confidence:.2f})', (x, y - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
-        # Display the video frame in the Streamlit app
+        # Display the frame in Streamlit app
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert to RGB before displaying
         frame_window.image(frame_rgb, channels="RGB", use_column_width=True)
 
-    video_capture.release()  # Release the video capture object
+    video_capture.release()  # Release video capture object when done
 
 # Streamlit app
 def main():
@@ -479,12 +457,12 @@ def main():
     if "start_detection" not in st.session_state:
         st.session_state.start_detection = False  # Initialize the state
 
-    # Toggle button for starting/stopping detection
+    # Button to toggle emotion detection
     if st.button("Start / Stop Detection"):
         st.session_state.start_detection = not st.session_state.start_detection
 
     if st.session_state.start_detection:
-        run_emotion_detection()  # Run the detection if the button is active
+        run_emotion_detection()  # Run emotion detection when button is active
 
 if __name__ == "__main__":
     main()
