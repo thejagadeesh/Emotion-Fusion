@@ -374,13 +374,30 @@ if page == "Video Annotation":
         st.info("Video processing is currently ongoing. Please wait until it completes.")
 
 
-
-# Live cam
 import streamlit as st
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 from mtcnn import MTCNN
+
+# Load the model and emotion labels once
+model = load_model('New_model.h5')
+# Emotion labels
+emotion_labels = ['angry', 'contempt', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+
+# Scaling factors for emotions
+emotion_scaling = {
+    'angry': 1.0,
+    'contempt': 1.0,
+    'disgust': 1.0,
+    'fear': 1.0,
+    'happy': 1.0,
+    'neutral': 1.0,
+    'sad': 1.0,
+    'surprise': 1.0,
+}
+
+detector = MTCNN()  # Initialize MTCNN detector
 
 # Function to preprocess the face region for prediction
 def preprocess_face(roi):
@@ -410,7 +427,7 @@ def run_emotion_detection():
     video_capture = cv2.VideoCapture(0)  # Open the default camera
     frame_window = st.empty()  # Placeholder for video frames
 
-    while True:
+    while st.session_state.start_detection:
         ret, frame = video_capture.read()  # Read a frame from the camera
         if not ret:
             break  # If no frame is captured, break the loop
@@ -433,18 +450,10 @@ def run_emotion_detection():
                 cv2.putText(frame, f'{emotion} ({confidence:.2f})', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
         # Display the video frame in the Streamlit app
-        frame_window.image(frame, channels="BGR")
-
-        # Stop the video capture if the button is clicked
-        if not st.session_state.start_detection:
-            break
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert to RGB before displaying
+        frame_window.image(frame_rgb, channels="RGB", use_column_width=True)
 
     video_capture.release()  # Release the video capture object
-
-# Run the emotion detection
-if __name__ == "__main__":
-    run_emotion_detection()
-
 
 # Streamlit app
 def main():
