@@ -24,7 +24,7 @@ st.title("EmotionFusion – Multimodal Understanding of Human Emotions")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Select an option",
                         ["Home", "Image Annotation", "Video Annotation",
-                         "Live Cam", ""], key='navigation')
+                         "Live Cam"], key='navigation')
 
 # Main content based on selected page
 
@@ -463,10 +463,6 @@ def run_emotion_detection():
 
     video_capture.release()  # Release the video capture object
 
-# Streamlit app
-def main():
-    st.title("Live Emotion Detection")
-
     if "start_detection" not in st.session_state:
         st.session_state.start_detection = False  # Initialize the state
 
@@ -476,6 +472,3 @@ def main():
 
     if st.session_state.start_detection:
         run_emotion_detection()  # Run the detection if the button is active
-
-if __name__ == "__main__":
-    main()
