@@ -380,8 +380,12 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from mtcnn import MTCNN
 
-# Load the model and emotion labels once
-model = load_model('New_model.h5')
+# Load the emotion recognition model
+model_path = r"New_model.h5"
+model = load_model(model_path)
+
+# Load the MTCNN detector for face detection
+detector = MTCNN()
 # Emotion labels
 emotion_labels = ['angry', 'contempt', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
